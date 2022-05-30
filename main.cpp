@@ -12,6 +12,7 @@
 #include "jsoncpp.cpp"
 
 #include <curl/curl.h>
+#include <cstdlib>
 
 #include <iostream>
 #include <string>
@@ -41,7 +42,7 @@ string login() {
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 
     res = curl_easy_perform(curl); curl_slist_free_all(list);
-    curl_easy_cleanup(curl); curl_global_cleanup();
+    curl_easy_cleanup(curl); curl_global_cleanup(); system("clear");
     Json::Reader reader; Json::Value root; reader.parse(response, root);
 
     if(root["status"].asInt()==401) {
@@ -53,4 +54,6 @@ string login() {
 
     return 0; }
 
-int main(void) { cout << "\n# 도발도발 로그인\n" << endl; string token = login(); }
+int main(void) { system("clear"); 
+    cout << "\n# 도발도발 로그인\n" << endl;
+    string token = login(); }
