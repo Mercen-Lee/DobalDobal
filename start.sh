@@ -1,1 +1,1 @@
-g++ -lcurl sha512.cpp main.cpp -o start && ./start
+g++ -lcurl -std=c++11 main.cpp -o start && ./start

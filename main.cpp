@@ -1,19 +1,52 @@
-//
-//  main.cpp
-//  DodamDodam
-//
-//  Created by Mercen on 2022/05/25.
-//
+// //
+// //  main.cpp
+// //  DodamDodam
+// //
+// //  Created by Mercen on 2022/05/25.
+// //
 
 #include "sha512.h"
+#include "sha512.cpp"
+
+#include "json/json.h"
+#include "jsoncpp.cpp"
+
+#include <curl/curl.h>
+
 #include <iostream>
 #include <string>
-#include <curl/curl.h>
 
 using namespace std;
 
-int main() {
-  
+size_t curl_callback(void *ptr, size_t size, size_t nmemb, std::string* data) {
+	data->append((char*)ptr, size * nmemb); return size * nmemb; }
+
+string post(string data) {
+
+    CURL *curl; CURLcode res;
+
+    string response; curl = curl_easy_init();
+    struct curl_slist *list = NULL;
+
+    curl_easy_setopt(curl, CURLOPT_URL, "http://auth.dodam.b1nd.com:80/auth/login");
+
+    list = curl_slist_append(list, "Content-Type: application/json");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
+
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+
+    res = curl_easy_perform(curl); curl_slist_free_all(list);
+    curl_easy_cleanup(curl); curl_global_cleanup();
+    Json::Reader reader; Json::Value root; reader.parse(response, root);
+
+    return root["data"]["token"].asString();
+}
+
+int main(void)
+{
     string id, pw, data;
   
     cout << "아이디: "; cin >> id;
@@ -21,30 +54,6 @@ int main() {
   
     string enc = sha512(pw);
     data = "{\"id\": \"" + id + "\", \"pw\": \"" + enc + "\"}";
-    
-    CURLcode ret;
-    CURL *hnd;
-    
-    struct curl_slist *slist1;
-    slist1 = NULL;
-    slist1 = curl_slist_append(slist1, "Content-Type: application/json");
 
-    hnd = curl_easy_init();
-    curl_easy_setopt(hnd, CURLOPT_URL, "http://auth.dodam.b1nd.com/auth/login");
-    curl_easy_setopt(hnd, CURLOPT_NOPROGRESS, 1L);
-    curl_easy_setopt(hnd, CURLOPT_POSTFIELDS, data.c_str());
-    curl_easy_setopt(hnd, CURLOPT_USERAGENT, "curl/7.38.0");
-    curl_easy_setopt(hnd, CURLOPT_HTTPHEADER, slist1);
-    curl_easy_setopt(hnd, CURLOPT_MAXREDIRS, 50L);
-    curl_easy_setopt(hnd, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_easy_setopt(hnd, CURLOPT_TCP_KEEPALIVE, 1L);
-
-    ret = curl_easy_perform(hnd);
-
-    curl_easy_cleanup(hnd);
-    hnd = NULL;
-    curl_slist_free_all(slist1);
-    slist1 = NULL;
-    
-    cout << data;
+    cout << post(data) << endl;
 }
