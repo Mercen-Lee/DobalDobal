@@ -1,6 +1,6 @@
 // //
 // //  main.cpp
-// //  DodamDodam
+// //  도발도발 프로젝트
 // //
 // //  Created by Mercen on 2022/05/25.
 // //
@@ -21,13 +21,15 @@ using namespace std;
 size_t curl_callback(void *ptr, size_t size, size_t nmemb, std::string* data) {
 	data->append((char*)ptr, size * nmemb); return size * nmemb; }
 
-string post(string data) {
+string login() {
 
-    CURL *curl; CURLcode res;
+    string id, pw, data, enc;
+    cout << " * 아이디: "; cin >> id; cout << " * 비밀번호: "; cin >> pw;
 
-    string response; curl = curl_easy_init();
-    struct curl_slist *list = NULL;
+    enc = sha512(pw); CURL *curl; CURLcode res;
+    data = "{\"id\": \"" + id + "\", \"pw\": \"" + enc + "\"}";
 
+    string response; curl = curl_easy_init(); struct curl_slist *list = NULL;
     curl_easy_setopt(curl, CURLOPT_URL, "http://auth.dodam.b1nd.com:80/auth/login");
 
     list = curl_slist_append(list, "Content-Type: application/json");
@@ -42,18 +44,13 @@ string post(string data) {
     curl_easy_cleanup(curl); curl_global_cleanup();
     Json::Reader reader; Json::Value root; reader.parse(response, root);
 
-    return root["data"]["token"].asString();
-}
+    if(root["status"].asInt()==401) {
+        cout << "\n아이디 또는 비밀번호가 잘못되었습니다!\n" << endl; return login(); }
 
-int main(void)
-{
-    string id, pw, data;
-  
-    cout << "아이디: "; cin >> id;
-    cout << "비밀번호: "; cin >> pw;
-  
-    string enc = sha512(pw);
-    data = "{\"id\": \"" + id + "\", \"pw\": \"" + enc + "\"}";
+    else if(root["status"].asInt()==200) { cout << "\n로그인에 성공하였습니다! 환영합니다, ";
+        cout << root["data"]["member"]["name"].asString() << "님!\n" << endl;
+        return root["data"]["token"].asString(); }
 
-    cout << post(data) << endl;
-}
+    return 0; }
+
+int main(void) { cout << "\n# 도발도발 로그인\n" << endl; string token = login(); }
