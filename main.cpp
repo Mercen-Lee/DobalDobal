@@ -12,7 +12,7 @@
 #include "jsoncpp.cpp"
 
 #include <curl/curl.h>
-#include <cstdlib>
+#include <termios.h>
 
 #include <iostream>
 #include <string>
@@ -20,6 +20,11 @@
 using namespace std;
 
 void Clear() { cout << "\x1B[2J\x1B[H"; }
+
+int getch(void) { int ch; struct termios legacy; struct termios final;
+    tcgetattr(0, &legacy); final = legacy; final.c_lflag &= ~(ICANON|ECHO);
+    final.c_cc[VMIN] = 1; final.c_cc[VTIME] = 0; tcsetattr(0, TCSAFLUSH, &final);
+    ch = getchar(); tcsetattr(0, TCSAFLUSH, &legacy); return ch; }
 
 size_t curl_callback(void *ptr, size_t size, size_t nmemb, std::string* data) {
 	data->append((char*)ptr, size * nmemb); return size * nmemb; }
@@ -56,6 +61,6 @@ string login() {
 
     return 0; }
 
-int main(void) { Clear();
-    cout << "\n# 도발도발 로그인\n" << endl;
+int main() { Clear();
+    cout << "\n# 도발도발 v0.1 로그인\n" << endl;
     string token = login(); }
