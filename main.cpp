@@ -95,19 +95,18 @@ string login() {
     reader.parse(response, root); // JSON 파싱 준비
     int status = root["status"].asInt(); // HTTP 응답 코드 불러오기
 
-    if(status==401) { // 로그인 오류(401)시
-        cout << "\n# 아이디 또는 비밀번호가 잘못되었습니다!\n" << endl;
-        return login(); // 재귀함수 login 호출
+    switch (status) {
+        case 401: { // 로그인 오류(401)시
+            cout << "\n# 아이디 또는 비밀번호가 잘못되었습니다!\n" << endl;
+            return login(); // 재귀함수 login 호출
+        }
+        case 200: { // 로그인 성공(200)시
+            string name = root["data"]["member"]["name"].asString();
+            cout << "\n# 환영합니다, " << name << "님!\n" << endl;
+            return root["data"]["token"].asString(); // token 문자열로 반환
+        }
+        default: return 0; // 예외 반환 처리
     }
-
-    else if(status==200) { // 로그인 성공(200)시
-        string name = root["data"]["member"]["name"].asString();
-
-        cout << "\n# 환영합니다, " << name << "님!\n" << endl;
-        return root["data"]["token"].asString(); // token 문자열로 반환
-    }
-
-    return 0; // 예외 반환 처리
 
 }
 
@@ -120,13 +119,11 @@ int main() {
 
     cout << "\n# 도발도발 v0.1 로그인\n" << endl;
     string token = login(); // 도담도담 로그인 후 token 선언
-    int command;
 
-    cout << "  - 1. 식단표 확인" << endl;
-    cout << "  - 2. 기상송 확인" << endl;
-    cout << "  - 3. 자습실 신청" << endl;
-    cout << "  - 4. 외출·외박 신청" << endl;
-    cout << "\n  * 입력: ";
-    cin >> command;
+    while(1) { int command;
+        string title[4] = {"식단표 확인", "기상송 확인", "자습실 신청", "외출·외박 신청"};
+        for(int i=0; i<4; i++) cout << "  - " << i+1 << ". " << title[i] << endl;
+        cout << "\n  * 입력: "; cin >> command; // 명령어 입력받기
+    }
     
 }
