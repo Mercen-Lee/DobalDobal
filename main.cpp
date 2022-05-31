@@ -121,7 +121,7 @@ void login() {
         else if (key == 127 && id.length()) { // 백스페이스 구현
             id = id.substr(0, id.length() - 1);
         }
-        Clear(); cout << "\n\e[?25h# 도담도담 로그인\n" << endl;
+        Clear(); cout << "\n\e[?25h # 도담도담 로그인\n" << endl;
         cout << "  - 아이디: " << id; // 화면 업데이트
         key = getch(); // 키 값 받아오기
     }
@@ -137,7 +137,7 @@ void login() {
             pwi = pwi.substr(0, pwi.length() - 1);
             pwj = pwj.substr(0, pwj.length() - 1);
         }
-        Clear(); cout << "\n\e[?25h# 도담도담 로그인\n" << endl;
+        Clear(); cout << "\n\e[?25h # 도담도담 로그인\n" << endl;
         cout << "  - 아이디: " << id << endl;
         cout << "  - 비밀번호: " << pwj; // 화면 업데이트
         key = getch(); // 키 값 받아오기
@@ -153,7 +153,7 @@ void login() {
 
     switch (root["status"].asInt()) { // HTTP 응답 코드 파싱
         case 401: { // 로그인 오류(401)시
-            Clear(); cout << "\n# 아이디 또는 비밀번호가 잘못되었습니다!\n" << endl;
+            Clear(); cout << "\n # 아이디 또는 비밀번호가 잘못되었습니다!\n" << endl;
             return login(); // 재귀함수 login 호출
         }
         case 200: { // 로그인 성공(200)시
@@ -172,12 +172,12 @@ void meal() {
 
     string meals, parsed, response; int command;
 
-    cout << "\n# 식단표 확인\n" << endl;
+    cout << "\n # 식단표 확인\n" << endl;
     string title[3] = {"조식", "중식", "석식"};
-    for(int i=0; i<3; i++) cout << "  - " << i+1 << ". " << title[i] << endl;
+    for(int i=0; i<3; i++) cout << "  - " << i+1 << ". " << title[i];
 
     command = getch()-48; Clear();
-    cout << "\n# 오늘의 " << title[command-1] << "\n\n  - ";
+    cout << "\n # 오늘의 " << title[command-1] << "\n\n  - ";
 
     time_t now = time(0); struct tm tstruct; // 시간 라이브러리 호출
     char date[80]; tstruct = *localtime(&now); // 형식에 맞춰 오늘 날짜 호출
@@ -201,7 +201,7 @@ void wakesong() {
 
     string text, response;
 
-    cout << "\n# 오늘의 기상송\n" << endl;
+    cout << "\n # 오늘의 기상송\n" << endl;
 
     time_t now = time(0); struct tm tstruct; // 시간 라이브러리 호출
     char date[80]; tstruct = *localtime(&now);
@@ -229,13 +229,13 @@ void wakesong() {
 int main() {
     
     Clear(); // 화면 지우기
-    cout << "\n\e[?25h# 도담도담 로그인\n" << endl; login(); // 도담도담 로그인
+    cout << "\n\e[?25h # 도담도담 로그인\n" << endl; login(); // 도담도담 로그인
 
     while(1) { int command;
-        Clear(); cout << "\n# 환영합니다, " << name << "님!\n" << endl; // 환영 메시지 출력
+        Clear(); cout << "\n # 환영합니다, " << name << "님!\n" << endl; // 환영 메시지 출력
         string title[4] = {"식단표 확인", "기상송 확인", "자습실 신청", "외출·외박 신청"};
 
-        for(int i=0; i<4; i++) cout << "  - " << i+1 << ". " << title[i] << endl;
+        for(int i=0; i<4; i++) cout << "  - " << i+1 << ". " << title[i];
         command = getch()-48; Clear(); // 명령어 입력
 
         if (command==1) meal();
