@@ -5,6 +5,7 @@
 // //  Created by Mercen on 2022/05/25.
 // //
 
+
 #include "sha512.h"    // 비밀번호 해시를 위한 SHA512 라이브러리
 #include "sha512.cpp"  // 출처 : http://www.zedwood.com/article/cpp-sha512-function
 
@@ -17,8 +18,12 @@
 #include <iostream>    // C++ 표준 입출력 iostream 라이브러리
 #include <string>      // 문자열 제어를 위한 string 라이브러리
 
-using namespace std;
-void Clear() { cout << "\x1B[2J\x1B[H"; } // 화면 지우기 함수
+using namespace std;   // std 네임스페이스 사용
+
+
+// 화면 지우기 함수
+
+void Clear() { cout << "\x1B[2J\x1B[H"; } 
 
 
 // 리눅스용 getch() 함수
@@ -116,6 +121,9 @@ int main() {
     cout << "\n# 도발도발 v0.1 로그인\n" << endl;
     string token = login(); // 도담도담 로그인 후 token 선언
 
+    cout << " 1. 식단표 확인" << endl;
+    cout << " 2. 자습실 신청" << endl;
+    cout << " 3. 외출 외박 신청" << endl;
     cout << " 1. 식단표 확인" << endl;
     
 }
