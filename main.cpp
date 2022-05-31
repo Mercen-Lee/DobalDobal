@@ -111,7 +111,7 @@ void login() {
 
     string id, pwi, pwj, data, enc, response;
 
-    cout << "  * 아이디: ";
+    cout << "  - 아이디: ";
     int key = getch(); // 키 값 받아오기
     
     while (key != 10 || id.empty()) { // 엔터키 구현
@@ -122,11 +122,11 @@ void login() {
             id = id.substr(0, id.length() - 1);
         }
         Clear(); cout << "\n\e[?25h# 도담도담 로그인\n" << endl;
-        cout << "  * 아이디: " << id; // 화면 업데이트
+        cout << "  - 아이디: " << id; // 화면 업데이트
         key = getch(); // 키 값 받아오기
     }
 
-    key = 0; cout << "  * 비밀번호: ";
+    key = 0; cout << "  - 비밀번호: ";
 
     while (key != 10 || pwi.empty()) { // 엔터키 구현
         if (key >= 21 && key <= 122) { // 비밀번호 입력 구현
@@ -138,8 +138,8 @@ void login() {
             pwj = pwj.substr(0, pwj.length() - 1);
         }
         Clear(); cout << "\n\e[?25h# 도담도담 로그인\n" << endl;
-        cout << "  * 아이디: " << id << endl;
-        cout << "  * 비밀번호: " << pwj; // 화면 업데이트
+        cout << "  - 아이디: " << id << endl;
+        cout << "  - 비밀번호: " << pwj; // 화면 업데이트
         key = getch(); // 키 값 받아오기
     }
 
@@ -199,7 +199,7 @@ void meal() {
 
 void wakesong() {
 
-    string response;
+    string text, response;
 
     cout << "\n# 오늘의 기상송\n" << endl;
 
@@ -214,9 +214,12 @@ void wakesong() {
     reader.parse(response, root); // JSON 파싱 준비
 
     for (int i=0; i<3; i++) {
-        cout << "  - " << root["data"]["allow"][i]["videoTitle"].asString() << endl;
-    } if (getch() == 10) return; // 엔터를 누르면 메인 함수로
-
+        text = root["data"]["allow"][i]["videoTitle"].asString();
+        if (text.length() > 70) text = text.substr(0, 70) + "...";
+        cout << "  - " << text << endl; // 문자열이 70보다 길면 자르고 ... 추가
+    }
+    
+    if (getch() == 10) return; // 엔터를 누르면 메인 함수로
 
 }
 
