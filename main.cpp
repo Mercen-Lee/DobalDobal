@@ -21,9 +21,17 @@
 using namespace std;   // std 네임스페이스 사용
 string name, token;
 
+
 // 화면 지우기 함수
 
-void Clear() { cout << "\x1B[2J\x1B[H"; } 
+void Clear() {
+
+    cout << "\x1B[2J\x1B[H" << endl;
+
+    for(int i=0; i<30; i++) cout << "="; cout << " [ 도발도발 0.1 ] ";
+    for(int i=0; i<30; i++) cout << "="; cout << endl;
+
+}
 
 
 // 리눅스용 getch() 함수
@@ -76,9 +84,9 @@ string postdata(string url, string data) {
 
 // 도담도담 로그인 함수
 
-string login() { 
+void login() {
 
-    string id, pw, data, enc, response; // 문자열 변수 미리 선언
+    string id, pw, data, enc, response;
 
     cout << "  * 아이디: "; cin >> id; // 아이디 입력
     cout << "  * 비밀번호: "; cin >> pw; // 비밀번호 입력
@@ -93,14 +101,14 @@ string login() {
 
     switch (root["status"].asInt()) { // HTTP 응답 코드 파싱
         case 401: { // 로그인 오류(401)시
-            cout << "\n# 아이디 또는 비밀번호가 잘못되었습니다!\n" << endl;
+            Clear(); cout << "\n# 아이디 또는 비밀번호가 잘못되었습니다!\n" << endl;
             return login(); // 재귀함수 login 호출
         }
         case 200: { // 로그인 성공(200)시
             name = root["data"]["member"]["name"].asString();
-            return root["data"]["token"].asString(); // token 문자열로 반환
+            token = root["data"]["token"].asString(); // token 문자열로 반환
         }
-        default: return 0; // 예외 반환 처리
+        default: return; // 예외 반환 처리
     }
 
 }
@@ -118,9 +126,7 @@ int meal() {
 int main() {
     
     Clear(); // 화면 지우기
-
-    cout << "\n# 도발도발 v0.1 로그인\n" << endl;
-    token = login(); // 도담도담 로그인 후 token 선언
+    cout << "\n# 도담도담 로그인\n" << endl; login(); // 도담도담 로그인
 
     while(1) { int command;
         Clear(); cout << "\n# 환영합니다, " << name << "님!\n" << endl; // 환영 메시지 출력
