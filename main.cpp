@@ -19,7 +19,7 @@
 #include <string>      // 문자열 제어를 위한 string 라이브러리
 
 using namespace std;   // std 네임스페이스 사용
-
+string name, token;
 
 // 화면 지우기 함수
 
@@ -88,26 +88,28 @@ string login() {
     data = "{\"id\": \"" + id + "\", \"pw\": \"" + enc + "\"}"; // JSON 데이터 생성
     response = postdata("http://auth.dodam.b1nd.com:80/auth/login", data); // POST 호출
 
-    Clear(); // 화면 지우기
-
-    Json::Reader reader; Json::Value root; // JSON 변수 미리 선언
-    
+    Json::Reader reader; Json::Value root; // JSON 변수 미리 선언  
     reader.parse(response, root); // JSON 파싱 준비
-    int status = root["status"].asInt(); // HTTP 응답 코드 불러오기
 
-    switch (status) {
+    switch (root["status"].asInt()) { // HTTP 응답 코드 파싱
         case 401: { // 로그인 오류(401)시
             cout << "\n# 아이디 또는 비밀번호가 잘못되었습니다!\n" << endl;
             return login(); // 재귀함수 login 호출
         }
         case 200: { // 로그인 성공(200)시
-            string name = root["data"]["member"]["name"].asString();
-            cout << "\n# 환영합니다, " << name << "님!\n" << endl;
+            name = root["data"]["member"]["name"].asString();
             return root["data"]["token"].asString(); // token 문자열로 반환
         }
         default: return 0; // 예외 반환 처리
     }
 
+}
+
+
+// 식단표 확인 함수
+
+int meal() {
+    cout << "\n# 식단표 확인\n" << endl; return 0;
 }
 
 
@@ -118,12 +120,16 @@ int main() {
     Clear(); // 화면 지우기
 
     cout << "\n# 도발도발 v0.1 로그인\n" << endl;
-    string token = login(); // 도담도담 로그인 후 token 선언
+    token = login(); // 도담도담 로그인 후 token 선언
 
     while(1) { int command;
+        Clear(); cout << "\n# 환영합니다, " << name << "님!\n" << endl; // 환영 메시지 출력
         string title[4] = {"식단표 확인", "기상송 확인", "자습실 신청", "외출·외박 신청"};
         for(int i=0; i<4; i++) cout << "  - " << i+1 << ". " << title[i] << endl;
-        cout << "\n  * 입력: "; cin >> command; // 명령어 입력받기
+        cout << "\n  * 입력: "; cin >> command; Clear(); // 명령어 입력
+
+        if (command==1) meal();
+        else return 0;
     }
     
 }
