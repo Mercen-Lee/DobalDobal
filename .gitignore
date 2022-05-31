@@ -3,5 +3,6 @@ jsoncpp.cpp
 sha512.cpp
 sha512.h
 start
+push.sh
 json/
 
