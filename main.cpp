@@ -16,6 +16,7 @@
 #include <termios.h>   // getch() 함수 구현을 위한 termios 라이브러리
 
 #include <iostream>    // C++ 표준 입출력 iostream 라이브러리
+#include <ctime>       // 현재 날짜 호출을 위한 time 라이브러리
 #include <string>      // 문자열 제어를 위한 string 라이브러리
 
 using namespace std;   // std 네임스페이스 사용
@@ -28,8 +29,9 @@ void Clear() {
 
     cout << "\x1B[2J\x1B[H" << endl;
 
-    for(int i=0; i<30; i++) cout << "="; cout << " [ 도발도발 0.1 ] ";
-    for(int i=0; i<30; i++) cout << "="; cout << endl;
+    for(int i=0; i<31; i++) cout << "="; cout << " [ 도발도발 0.1 ] ";
+    for(int i=0; i<31; i++) cout << "="; cout << endl;
+    for(int i=0; i<80; i++) cout << "-"; cout << endl;
 
 }
 
@@ -116,8 +118,18 @@ void login() {
 
 // 식단표 확인 함수
 
-int meal() {
-    cout << "\n# 식단표 확인\n" << endl; return 0;
+void meal() {
+
+    cout << "\n# 식단표 확인\n" << endl;
+
+    time_t now = time(0); struct tm tstruct;
+
+    char date[80]; tstruct = *localtime(&now);
+    strftime(date, sizeof(date), "%Y%m%d", &tstruct);
+
+    string todate(date);
+    cout << todate;
+
 }
 
 
