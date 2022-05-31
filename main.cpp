@@ -70,7 +70,6 @@ string getdata(string url) {
 
     struct curl_slist *list = NULL; // 헤더 리스트 선언
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str()); // URL 설정
-
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response); // 응답 송신
 
@@ -178,14 +177,12 @@ void meal() {
     for(int i=0; i<3; i++) cout << "  - " << i+1 << ". " << title[i] << endl;
 
     command = getch()-48; Clear();
-
     cout << "\n# 오늘의 " << title[command-1] << "\n\n  - ";
-    time_t now = time(0); struct tm tstruct;
 
-    char date[80]; tstruct = *localtime(&now);
-    strftime(date, sizeof(date), "%Y%m%d", &tstruct);
+    time_t now = time(0); struct tm tstruct; // 시간 라이브러리 호출
+    char date[80]; tstruct = *localtime(&now); // 형식에 맞춰 오늘 날짜 호출
+    strftime(date, sizeof(date), "%Y%m%d", &tstruct); string todate(date);
 
-    string todate(date);
     response = getdata(MEALURL + todate + "&MMEAL_SC_CODE=" + to_string(command));
     Json::Reader reader; Json::Value root; // JSON 변수 미리 선언  
     reader.parse(response, root); // JSON 파싱 준비
@@ -193,7 +190,33 @@ void meal() {
     parsed = root["mealServiceDietInfo"][1]["row"][0]["DDISH_NM"].asString();
     meals = regex_replace(parsed, regex("<br/>"), "\n  - ");
 
-    cout << meals << endl; if (getch() == 10) return;
+    cout << meals << endl; if (getch() == 10) return; // 엔터를 누르면 메인 함수로
+
+}
+
+
+// 기상송 확인 함수
+
+void wakesong() {
+
+    string response;
+
+    cout << "\n# 오늘의 기상송\n" << endl;
+
+    time_t now = time(0); struct tm tstruct; // 시간 라이브러리 호출
+    char date[80]; tstruct = *localtime(&now);
+
+    strftime(date, sizeof(date), "%Y&month=%m&date=%d", &tstruct);
+    string todate(date); // 형식에 맞춰 오늘 날짜 호출
+
+    response = getdata("http://dodam.b1nd.com/api/v2//wakeup-song?year=" + todate);
+    Json::Reader reader; Json::Value root; // JSON 변수 미리 선언  
+    reader.parse(response, root); // JSON 파싱 준비
+
+    for (int i=0; i<3; i++) {
+        cout << "  - " << root["data"]["allow"][i]["videoTitle"].asString() << endl;
+    } if (getch() == 10) return; // 엔터를 누르면 메인 함수로
+
 
 }
 
@@ -213,6 +236,7 @@ int main() {
         command = getch()-48; Clear(); // 명령어 입력
 
         if (command==1) meal();
+        else if (command==2) wakesong();
         else { cout << "\e[?25h"; return 0; }
     }
     
