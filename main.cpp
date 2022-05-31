@@ -27,11 +27,10 @@ string name, token;
 
 void Clear() {
 
-    cout << "\x1B[2J\x1B[H" << endl;
+    cout << "\x1B[2J\x1B[H" << endl; // 화면에 있는 모든 로그 삭제
 
-    for(int i=0; i<31; i++) cout << "="; cout << " [ 도발도발 0.1 ] ";
-    for(int i=0; i<31; i++) cout << "="; cout << endl;
-    for(int i=0; i<80; i++) cout << "-"; cout << endl;
+    cout << "=============================== [ 도발도발 0.1 ] ===============================" << endl;
+    cout << "--------------------------------------------------------------------------------" << endl;
 
 }
 
@@ -93,7 +92,7 @@ void login() {
     cout << "  * 아이디: ";
     int key = getch(); // 키 값 받아오기
     
-    while (key != 10) { // 엔터키 구현
+    while (key != 10 || id.empty()) { // 엔터키 구현
         if (key >= 21 && key <= 122) { // 키 입력 구현
             string tostr; tostr=(char) key; id += tostr;
         }
@@ -107,7 +106,7 @@ void login() {
 
     key = 0; cout << "  * 비밀번호: ";
 
-    while (key != 10) { // 엔터키 구현
+    while (key != 10 || pwi.empty()) { // 엔터키 구현
         if (key >= 21 && key <= 122) { // 비밀번호 입력 구현
             string tostr; tostr=(char) key;
             pwi += tostr; pwj += "*";
