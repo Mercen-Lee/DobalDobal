@@ -94,7 +94,7 @@ void login() {
     int key = getch(); // 키 값 받아오기
     
     while (key != 10) { // 엔터키 구현
-        if (key >= 48 && key <= 122) { // 키 입력 구현
+        if (key >= 21 && key <= 122) { // 키 입력 구현
             string tostr; tostr=(char) key; id += tostr;
         }
         else if (key == 127 && id.length()) { // 백스페이스 구현
@@ -108,7 +108,7 @@ void login() {
     key = 0; cout << "  * 비밀번호: ";
 
     while (key != 10) { // 엔터키 구현
-        if (key >= 48 && key <= 122) { // 비밀번호 입력 구현
+        if (key >= 21 && key <= 122) { // 비밀번호 입력 구현
             string tostr; tostr=(char) key;
             pwi += tostr; pwj += "*";
         }
