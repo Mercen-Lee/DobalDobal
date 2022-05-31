@@ -88,12 +88,41 @@ string postdata(string url, string data) {
 
 void login() {
 
-    string id, pw, data, enc, response;
+    string id, pwi, pwj, data, enc, response;
 
-    cout << "  * 아이디: "; cin >> id; // 아이디 입력
-    cout << "  * 비밀번호: "; cin >> pw; // 비밀번호 입력
+    cout << "  * 아이디: ";
+    int key = getch(); // 키 값 받아오기
+    
+    while (key != 10) { // 엔터키 구현
+        if (key >= 48 && key <= 122) { // 키 입력 구현
+            string tostr; tostr=(char) key; id += tostr;
+        }
+        else if (key == 127 && id.length()) { // 백스페이스 구현
+            id = id.substr(0, id.length() - 1);
+        }
+        Clear(); cout << "\n# 도담도담 로그인\n" << endl;
+        cout << "  * 아이디: " << id; // 화면 업데이트
+        key = getch(); // 키 값 받아오기
+    }
 
-    enc = sha512(pw); // 비밀번호 SHA512로 암호화
+    key = 0; cout << "  * 비밀번호: ";
+
+    while (key != 10) { // 엔터키 구현
+        if (key >= 48 && key <= 122) { // 비밀번호 입력 구현
+            string tostr; tostr=(char) key;
+            pwi += tostr; pwj += "*";
+        }
+        else if (key == 127 && pwi.length()) { // 백스페이스 구현
+            pwi = pwi.substr(0, pwi.length() - 1);
+            pwj = pwj.substr(0, pwj.length() - 1);
+        }
+        Clear(); cout << "\n# 도담도담 로그인\n" << endl;
+        cout << "  * 아이디: " << id << endl;
+        cout << "  * 비밀번호: " << pwj; // 화면 업데이트
+        key = getch(); // 키 값 받아오기
+    }
+
+    enc = sha512(pwi); // 비밀번호 SHA512로 암호화
 
     data = "{\"id\": \"" + id + "\", \"pw\": \"" + enc + "\"}"; // JSON 데이터 생성
     response = postdata("http://auth.dodam.b1nd.com:80/auth/login", data); // POST 호출
