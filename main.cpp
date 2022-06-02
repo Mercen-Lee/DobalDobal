@@ -1,4 +1,5 @@
-#define MEALURL "https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=85d56b3110fa4a2bbb700a1106bb58bf&Type=json&ATPT_OFCDC_SC_CODE=D10&SD_SCHUL_CODE=7240454&MLSV_YMD="
+#define MEALURL "http://open.neis.go.kr/hub/mealServiceDietInfo?KEY=85d56b3110fa4a2bbb700a1106bb58bf&Type=json&ATPT_OFCDC_SC_CODE=D10&SD_SCHUL_CODE=7240454&MLSV_YMD="
+#define DODAMAPI "http://dodam.b1nd.com/api/v2//"
 
 // //
 // //  main.cpp
@@ -224,7 +225,7 @@ void wakesong() {
     strftime(date, sizeof(date), "%Y&month=%m&date=%d", &tstruct);
     string todate(date); // 형식에 맞춰 오늘 날짜 호출
 
-    response = getdata("http://dodam.b1nd.com/api/v2//wakeup-song?year=" + todate);
+    response = getdata(DODAMAPI + ("wakeup-song?year=" + todate));
     Json::Reader reader; Json::Value root; // JSON 변수 미리 선언  
     reader.parse(response, root); // JSON 파싱 준비
 
@@ -253,9 +254,9 @@ string findloca(int number) {
 
 void location() {
     
-    cout << "\n # 자습실 신청\n" << endl;
+    string response, todayloca, locatime; int command, locate;
 
-    string parsed, response; int command, locate;
+    cout << "\n # 자습실 목록\n" << endl;
 
     time_t now = time(0); struct tm tstruct; // 시간 라이브러리 호출
     char date[80]; char day[80]; tstruct = *localtime(&now); // 형식에 맞춰 오늘 날짜 호출
@@ -263,26 +264,42 @@ void location() {
     strftime(date, sizeof(date), "%Y-%m-%d", &tstruct); string todate(date);
     strftime(day, sizeof(day), "%w", &tstruct); string today(day);
 
-    response = getdata("http://dodam.b1nd.com/api/v2//location/my?date=" + todate);
-    Json::Reader reader; Json::Value root; Json::Value root2; // JSON 변수 미리 선언  
-    reader.parse(response, root); // JSON 파싱 준비
+    response = getdata(DODAMAPI + ("location/my?date=" + todate));
+    Json::Reader reader; Json::Value curloca, defloca, locaname; // JSON 변수 미리 선언  
+    reader.parse(response, curloca); // JSON 파싱 준비
 
-    response = getdata("http://dodam.b1nd.com/api/v2//location/default/" + today); 
-    reader.parse(response, root2); // JSON 파싱 준비
+    response = getdata(DODAMAPI + ("location/default/" + today)); 
+    reader.parse(response, defloca); // JSON 파싱 준비
+
+    todayloca = today == "6" && today == "0" ? "2" : "1"; // 주말 또는 평일 형식
+    response = getdata(DODAMAPI + ("time-table/type/" + todayloca));
+    reader.parse(response, locaname); // JSON 파싱 준비
 
     for (int i=0; i<4; i++) {
-        if (root["data"]["locations"][i] == Json::Value::null) {
-            locate = root2["data"]["defaultLocations"][i]["placeIdx"].asInt();
-        } else locate = root["data"]["locations"][i]["placeIdx"].asInt();
-        cout << "  - " << i+1 << ". " << findloca(locate) << endl;
+        if (curloca["data"]["locations"][i] == Json::Value::null) {
+            locate = defloca["data"]["defaultLocations"][i]["placeIdx"].asInt();
+        } else locate = curloca["data"]["locations"][i]["placeIdx"].asInt();
+        cout << "  - " << i+1 << ". " << findloca(locate);
     }
+
+    command = getch()-48; Clear();
+    Json::Value locates = locaname["data"]["timeTables"][command-1];
+    locatime = locates["startTime"].asString() + " ~ " + locates["endTime"].asString();
+    cout << "\n # " << locates["name"].asString() << " " << locatime << endl;
 
     if (getch() == 10) return; // 엔터를 누르면 메인 함수로
 
 }
 
 
-// 메인 함수
+// 외출·외박 신청 함수
+
+void escape() {
+
+}
+
+
+// 메인 화면 함수
 
 int main() {
     
@@ -296,10 +313,9 @@ int main() {
         for(int i=0; i<4; i++) cout << "  - " << i+1 << ". " << title[i];
         command = getch()-48; Clear(); // 명령어 입력
 
-        if (command==1) meal();
-        else if (command==2) wakesong();
-        else if (command==3) location();
-        else { cout << "\e[?25h"; return 0; }
+        if (command==1) meal(); // 명령어 구분
+        else if (command==2) wakesong(); else if (command==3) location();
+        else if (command==4) escape(); else { cout << "\e[?25h"; return 0; }
     }
     
 }
