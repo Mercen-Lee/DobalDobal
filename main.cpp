@@ -26,6 +26,18 @@ using namespace std;   // std 네임스페이스 사용
 string name, token;
 
 
+// 자습실 번호 딕셔너리를 배열로 대체
+
+string classes[55] = {"1-1교실","1-2교실","1-3교실","1-4교실","2-1교실","2-2교실","2-3교실","3-1교실","3-2교실",
+"3-3교실","DB네트워크실습실","공작실","국어전용실","기숙사","도서관","랩1","랩10","랩11","랩12","랩13","랩14","랩15",
+"랩16","랩2","랩3","랩4","랩5","랩6","랩7","랩8","랩9","면접실","모둠학습실","모바일로보틱스실습실","모바일프로그래밍실",
+"미술실","방송실","사회/역사전용실","산학겸임교사실","상담실(Wee)","수학전용실","시청각실","오케스트라실","운동장","웹프로그래밍실습실",
+"윈도우프로그래밍실","음악실","체육관","프로그래밍1","프로그래밍2","프로그래밍3","프로그래밍4","학생자치실","회의실1","회의실2"};
+
+int numbers[55] = {1,2,3,124,4,5,6,7,8,9,115,53,41,114,51,10,20,21,22,23,24,25,26,11,12,14,15,16,
+17,18,19,113,60,59,54,119,116,43,118,117,42,58,52,110,57,55,111,56,31,32,33,34,112,120,122};
+
+
 // 화면 지우기 함수
 
 void Clear() {
@@ -83,14 +95,16 @@ string getdata(string url) {
 
 // HTTP POST 통신 함수
 
-string postdata(string url, string data) {
+string postdata(string url, string data, bool put) {
 
     string response; CURL *curl = curl_easy_init(); // libcurl 세팅
 
     struct curl_slist *list = NULL; // 헤더 리스트 선언
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str()); // URL 설정
 
-    list = curl_slist_append(list, "Content-Type: application/json");
+    if (put) curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT"); // 통신 방식
+    list = curl_slist_append(list, "Content-Type: application/json;charset=UTF-8");
+    list = curl_slist_append(list, ("x-access-token: " + token).c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list); // 헤더에 data 정보 삽입
 
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str()); // data 삽입
@@ -146,7 +160,7 @@ void login() {
     enc = sha512(pwi); // 비밀번호 SHA512로 암호화
 
     data = "{\"id\": \"" + id + "\", \"pw\": \"" + enc + "\"}"; // JSON 데이터 생성
-    response = postdata("http://auth.dodam.b1nd.com:80/auth/login", data); // POST 호출
+    response = postdata("http://auth.dodam.b1nd.com:80/auth/login", data, false); // POST 호출
 
     Json::Reader reader; Json::Value root; // JSON 변수 미리 선언  
     reader.parse(response, root); // JSON 파싱 준비
@@ -220,6 +234,15 @@ void wakesong() {
     }
     
     if (getch() == 10) return; // 엔터를 누르면 메인 함수로
+
+}
+
+
+//자습실 신청 함수
+
+void location() {
+    
+    cout << "\n # 자습실\n" << endl;
 
 }
 
