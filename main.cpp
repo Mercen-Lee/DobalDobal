@@ -81,6 +81,9 @@ string getdata(string url) {
     string response; CURL *curl = curl_easy_init(); // libcurl 세팅
 
     struct curl_slist *list = NULL; // 헤더 리스트 선언
+    list = curl_slist_append(list, ("x-access-token: " + token).c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list); // 헤더에 data 정보 삽입
+
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str()); // URL 설정
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response); // 응답 송신
@@ -131,8 +134,7 @@ void login() {
     while (key != 10 || id.empty()) { // 엔터키 구현
         if (key >= 21 && key <= 122) { // 키 입력 구현
             string tostr; tostr=(char) key; id += tostr;
-        }
-        else if (key == 127 && id.length()) { // 백스페이스 구현
+        } else if (key == 127 && id.length()) { // 백스페이스 구현
             id = id.substr(0, id.length() - 1);
         }
         Clear(); cout << "\n\e[?25h # 도담도담 로그인\n" << endl;
@@ -146,8 +148,7 @@ void login() {
         if (key >= 21 && key <= 122) { // 비밀번호 입력 구현
             string tostr; tostr=(char) key;
             pwi += tostr; pwj += "*";
-        }
-        else if (key == 127 && pwi.length()) { // 백스페이스 구현
+        } else if (key == 127 && pwi.length()) { // 백스페이스 구현
             pwi = pwi.substr(0, pwi.length() - 1);
             pwj = pwj.substr(0, pwj.length() - 1);
         }
@@ -238,11 +239,45 @@ void wakesong() {
 }
 
 
-//자습실 신청 함수
+// 자습실 검색 함수
+
+string findloca(int number) {
+
+    for(int i=0; i<55; i++) if (number == numbers[i]) return classes[i];
+    return 0;
+
+}
+
+
+// 자습실 신청 함수
 
 void location() {
     
-    cout << "\n # 자습실\n" << endl;
+    cout << "\n # 자습실 신청\n" << endl;
+
+    string parsed, response; int command, locate;
+
+    time_t now = time(0); struct tm tstruct; // 시간 라이브러리 호출
+    char date[80]; char day[80]; tstruct = *localtime(&now); // 형식에 맞춰 오늘 날짜 호출
+
+    strftime(date, sizeof(date), "%Y-%m-%d", &tstruct); string todate(date);
+    strftime(day, sizeof(day), "%w", &tstruct); string today(day);
+
+    response = getdata("http://dodam.b1nd.com/api/v2//location/my?date=" + todate);
+    Json::Reader reader; Json::Value root; Json::Value root2; // JSON 변수 미리 선언  
+    reader.parse(response, root); // JSON 파싱 준비
+
+    response = getdata("http://dodam.b1nd.com/api/v2//location/default/" + today); 
+    reader.parse(response, root2); // JSON 파싱 준비
+
+    for (int i=0; i<4; i++) {
+        if (root["data"]["locations"][i] == Json::Value::null) {
+            locate = root2["data"]["defaultLocations"][i]["placeIdx"].asInt();
+        } else locate = root["data"]["locations"][i]["placeIdx"].asInt();
+        cout << "  - " << i+1 << ". " << findloca(locate) << endl;
+    }
+
+    if (getch() == 10) return; // 엔터를 누르면 메인 함수로
 
 }
 
@@ -263,6 +298,7 @@ int main() {
 
         if (command==1) meal();
         else if (command==2) wakesong();
+        else if (command==3) location();
         else { cout << "\e[?25h"; return 0; }
     }
     
