@@ -1,4 +1,4 @@
-#define MEALURL "http://open.neis.go.kr/hub/mealServiceDietInfo?KEY=85d56b3110fa4a2bbb700a1106bb58bf&Type=json&ATPT_OFCDC_SC_CODE=D10&SD_SCHUL_CODE=7240454&MLSV_YMD="
+#define MEALURL "https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=85d56b3110fa4a2bbb700a1106bb58bf&Type=json&ATPT_OFCDC_SC_CODE=D10&SD_SCHUL_CODE=7240454&MLSV_YMD="
 #define DODAMAPI "http://dodam.b1nd.com/api/v2//"
 
 // //
@@ -69,7 +69,7 @@ int getch() {
 
 size_t callback(void *ptr, size_t size, size_t nmemb, string* data) {
 
-	data->append((char*)ptr, size * nmemb);
+    data->append((char*)ptr, size * nmemb);
     return size * nmemb;
 
 }
@@ -254,7 +254,7 @@ string findloca(int number) {
 
 void location() {
     
-    string response, todayloca, locatime; int command, locate;
+    string response, todayloca, locatime, table, place; int command, sub, locate, nulls = 0;
 
     cout << "\n # 자습실 목록\n" << endl;
 
@@ -276,7 +276,7 @@ void location() {
     reader.parse(response, locaname); // JSON 파싱 준비
 
     for (int i=0; i<4; i++) {
-        if (curloca["data"]["locations"][i] == Json::Value::null) {
+        if (curloca["data"]["locations"][i] == Json::Value::null) { nulls++;
             locate = defloca["data"]["defaultLocations"][i]["placeIdx"].asInt();
         } else locate = curloca["data"]["locations"][i]["placeIdx"].asInt();
         cout << "  - " << i+1 << ". " << findloca(locate);
@@ -285,7 +285,19 @@ void location() {
     command = getch()-48; Clear();
     Json::Value locates = locaname["data"]["timeTables"][command-1];
     locatime = locates["startTime"].asString() + " ~ " + locates["endTime"].asString();
-    cout << "\n # " << locates["name"].asString() << " " << locatime << endl;
+
+    for (int i=0; i<55; i+=3) {
+        cout << "\n # " << locates["name"].asString() << " " << locatime << "\n" << endl;
+        for (int j=0; j<3; j++) cout << "  - " << j+1 << ". " << classes[i+j];
+        cout << "  - 4. 다음"; sub = getch()-48; Clear();
+        if (sub<=3) {
+            table = "{\"locations\":[{\"timeTableIdx\":" + to_string(command);
+            place = ",\"placeIdx\":" + to_string(numbers[sub+i-1]) + "}]}";
+            string posturl("location");
+            response = postdata(DODAMAPI + posturl, table + place, nulls != 4);
+            Clear(); cout << "\n # 자습실을 신청했습니다!\n" << endl; getch(); return;
+        }
+    }
 
     if (getch() == 10) return; // 엔터를 누르면 메인 함수로
 
