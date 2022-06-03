@@ -45,7 +45,7 @@ void Clear() {
 
     cout << "\x1B[2J\x1B[H\e[?25l" << endl; // 화면에 있는 모든 로그 삭제
 
-    cout << "=============================== [ 도발도발 0.1 ] ===============================" << endl;
+    cout << "=============================== [ 도발도발 0.2 ] ===============================" << endl;
     cout << "--------------------------------------------------------------------------------" << endl;
 
 }
@@ -254,9 +254,8 @@ string findloca(int number) {
 
 void location() {
     
-    string response, todayloca, locatime, table, place; int command, sub, locate, nulls = 0;
-
-    cout << "\n # 자습실 목록\n" << endl;
+    string response, todayloca, locatime, table, place; 
+    int command, sub, locate, nulls[4] = { }; cout << "\n # 자습실 목록\n" << endl;
 
     time_t now = time(0); struct tm tstruct; // 시간 라이브러리 호출
     char date[80]; char day[80]; tstruct = *localtime(&now); // 형식에 맞춰 오늘 날짜 호출
@@ -265,7 +264,7 @@ void location() {
     strftime(day, sizeof(day), "%w", &tstruct); string today(day);
 
     response = getdata(DODAMAPI + ("location/my?date=" + todate));
-    Json::Reader reader; Json::Value curloca, defloca, locaname; // JSON 변수 미리 선언  
+    Json::Reader reader; Json::Value curloca, defloca, locaname; // JSON 변수 미리 선언
     reader.parse(response, curloca); // JSON 파싱 준비
 
     response = getdata(DODAMAPI + ("location/default/" + today)); 
@@ -276,7 +275,7 @@ void location() {
     reader.parse(response, locaname); // JSON 파싱 준비
 
     for (int i=0; i<4; i++) {
-        if (curloca["data"]["locations"][i] == Json::Value::null) { nulls++;
+        if (curloca["data"]["locations"][i] == Json::Value::null) { nulls[i] = 1;
             locate = defloca["data"]["defaultLocations"][i]["placeIdx"].asInt();
         } else locate = curloca["data"]["locations"][i]["placeIdx"].asInt();
         cout << "  - " << i+1 << ". " << findloca(locate);
@@ -294,7 +293,7 @@ void location() {
             table = "{\"locations\":[{\"timeTableIdx\":" + to_string(command);
             place = ",\"placeIdx\":" + to_string(numbers[sub+i-1]) + "}]}";
             string posturl("location");
-            response = postdata(DODAMAPI + posturl, table + place, nulls != 4);
+            response = postdata(DODAMAPI + posturl, table + place, nulls[command-1] != 1);
             Clear(); cout << "\n # 자습실을 신청했습니다!\n" << endl; getch(); return;
         }
     }
