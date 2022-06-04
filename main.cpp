@@ -303,13 +303,6 @@ void location() {
 }
 
 
-// 외출·외박 신청 함수
-
-void escape() {
-
-}
-
-
 // 메인 화면 함수
 
 int main() {
@@ -319,14 +312,14 @@ int main() {
 
     while(1) { int command;
         Clear(); cout << "\n # 환영합니다, " << name << "님!\n" << endl; // 환영 메시지 출력
-        string title[4] = {"식단표 확인", "기상송 확인", "자습실 신청", "외출·외박 신청"};
+        string title[4] = {"식단표 확인", "기상송 확인", "자습실 신청"};
 
-        for(int i=0; i<4; i++) cout << "  - " << i+1 << ". " << title[i];
+        for(int i=0; i<3; i++) cout << "  - " << i+1 << ". " << title[i];
         command = getch()-48; Clear(); // 명령어 입력
 
         if (command==1) meal(); // 명령어 구분
         else if (command==2) wakesong(); else if (command==3) location();
-        else if (command==4) escape(); else { cout << "\e[?25h"; return 0; }
+        else { cout << "\e[?25h"; return 0; }
     }
     
 }
