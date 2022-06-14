@@ -229,7 +229,7 @@ void wakesong() {
     Json::Reader reader; Json::Value root; // JSON 변수 미리 선언  
     reader.parse(response, root); // JSON 파싱 준비
 
-    for (int i=0; i<3; i++) {
+    for (int i=0; i<4; i++) {
         text = root["data"]["allow"][i]["videoTitle"].asString();
         if (text.length() > 70) text = text.substr(0, 70) + "...";
         cout << "  - " << text << endl; // 문자열이 70보다 길면 자르고 ... 추가
@@ -306,7 +306,7 @@ void location() {
 // 외출·외박 신청 함수
 
 void escape() {
-
+    
 }
 
 
