@@ -45,7 +45,7 @@ void Clear() {
 
     cout << "\x1B[2J\x1B[H\e[?25l" << endl; // 화면에 있는 모든 로그 삭제
 
-    cout << "=============================== [ 도발도발 0.2 ] ===============================" << endl;
+    cout << "=============================== [ 도발도발 0.3 ] ===============================" << endl;
     cout << "--------------------------------------------------------------------------------" << endl;
 
 }
@@ -306,7 +306,51 @@ void location() {
 // 외출·외박 신청 함수
 
 void escape() {
+
+    string subtitle, urltype, stime, etime, reason;
+
+    cout << "\n # 외출·외박 신청\n" << endl;
+    string title[2] = {"외출", "외박"};
+
+    for(int i=0; i<2; i++) cout << "  - " << i+1 << ". " << title[i];
+    int command = getch()-48; Clear();
+    cout << "\n\e[?25h # " << title[command-1] << " 신청\n\n";
+
+    switch(command) {
+        case 1: { subtitle = "HH:mm:ss"; urltype = "pass"; break;}
+        case 2: { subtitle = "yyyy-MM-dd HH:mm:ss"; urltype = "leave"; break;}
+    }
+
+    cout << "  - 시작 시간(" << subtitle << "): ";
     
+    int key = getch(); // 키 값 받아오기
+    
+    while (key != 10 || stime.empty()) { // 엔터키 구현
+        if (key >= 21 && key <= 122) { // 키 입력 구현
+            string tostr; tostr=(char) key; stime += tostr;
+        } else if (key == 127 && stime.length()) { // 백스페이스 구현
+            stime = stime.substr(0, stime.length() - 1);
+        }
+        Clear(); cout << "\n\e[?25h # " << title[command-1] << " 신청\n\n";
+        cout << "  - 시작 시간(" << subtitle << "): " << stime; // 화면 업데이트
+        key = getch(); // 키 값 받아오기
+    }
+
+    key = 0; cout << "\n  - 복귀 시간(" << subtitle << "): ";
+    
+    while (key != 10 || etime.empty()) { // 엔터키 구현
+        if (key >= 21 && key <= 122) { // 키 입력 구현
+            string tostr; tostr=(char) key; etime += tostr;
+        } else if (key == 127 && etime.length()) { // 백스페이스 구현
+            etime = etime.substr(0, etime.length() - 1);
+        }
+        Clear(); cout << "\n\e[?25h # " << title[command-1] << " 신청\n\n";
+        cout << "  - 시작 시간(" << subtitle << "): " << stime; // 화면 업데이트
+        cout << "\n  - 복귀 시간(" << subtitle << "): " << etime;
+        key = getch(); // 키 값 받아오기
+    }
+
+    cout << "\n  - " << title[command-1] << " 사유: "; cin >> reason; key = getch();
 }
 
 
