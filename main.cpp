@@ -19,6 +19,7 @@
 #include <termios.h>   // getch() 함수 구현을 위한 termios 라이브러리
 
 #include <iostream>    // C++ 표준 입출력 iostream 라이브러리
+#include <fstream>     // 자동 로그인을 위한 fstream 라이브러리
 #include <ctime>       // 현재 날짜 호출을 위한 time 라이브러리
 #include <string>      // 문자열 제어를 위한 string 라이브러리
 #include <regex>       // 문자열 치환을 위한 정규식 regex 라이브러리
@@ -45,7 +46,7 @@ void Clear() {
 
     cout << "\x1B[2J\x1B[H\e[?25l" << endl; // 화면에 있는 모든 로그 삭제
 
-    cout << "=============================== [ 도발도발 0.3 ] ===============================" << endl;
+    cout << "=============================== [ 도발도발 0.4 ] ===============================" << endl;
     cout << "--------------------------------------------------------------------------------" << endl;
 
 }
@@ -120,6 +121,17 @@ string postdata(string url, string data, bool put) {
 
     return response; // 응답내용 문자열로 반환
 
+}
+
+
+// 자동 로그인 함수
+
+void checktoken() {
+
+    ifstream file("DobalDobal.token");
+    if(file.is_open()) {
+        
+    }
 }
 
 
@@ -307,7 +319,7 @@ void location() {
 
 void escape() {
 
-    string subtitle, urltype, stime, etime, reason;
+    string subtitle, urltype, stime, etime, reason, table, place;
 
     cout << "\n # 외출·외박 신청\n" << endl;
     string title[2] = {"외출", "외박"};
@@ -317,8 +329,8 @@ void escape() {
     cout << "\n\e[?25h # " << title[command-1] << " 신청\n\n";
 
     switch(command) {
-        case 1: { subtitle = "HH:mm:ss"; urltype = "pass"; break;}
-        case 2: { subtitle = "yyyy-MM-dd HH:mm:ss"; urltype = "leave"; break;}
+        case 1: { subtitle = "HH:mm:ss"; urltype = "offbase/pass"; break; }
+        case 2: { subtitle = "yyyy-MM-dd HH:mm:ss"; urltype = "offbase/leave"; break;}
     }
 
     cout << "  - 시작 시간(" << subtitle << "): ";
@@ -350,7 +362,19 @@ void escape() {
         key = getch(); // 키 값 받아오기
     }
 
+    if(command == 1) {
+        time_t now = time(0); struct tm tstruct; // 시간 라이브러리 호출
+        char date[80]; tstruct = *localtime(&now); // 형식에 맞춰 오늘 날짜 호출
+        strftime(date, sizeof(date), "%Y-%m-%d ", &tstruct); string todate(date);
+        stime = todate + stime; etime = todate + etime;
+    }
+
     cout << "\n  - " << title[command-1] << " 사유: "; cin >> reason; key = getch();
+
+    table = "{\"reason\":\"" + reason + "\",\"endTime\":\"";
+    place = table + etime + "\",\"startTime\":\"" + stime + "\"}";
+    string result = postdata(DODAMAPI + urltype, table + place, false);
+
 }
 
 
