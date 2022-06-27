@@ -1,16 +1,16 @@
+// //
+// //  프로그래밍C 수행평가 1211 이석호
+// //
+// //  https://github.com/Mercenary-Lee/DobalDobal-Extension
+// //  DobalDobal-Extension의 라이브러리들을 같은 폴더에 넣고 실행시켜주세요.
+// //
+
+
 #define MEALURL "https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=85d56b3110fa4a2bbb700a1106bb58bf&Type=json&ATPT_OFCDC_SC_CODE=D10&SD_SCHUL_CODE=7240454&MLSV_YMD="
 #define DODAMAPI "http://dodam.b1nd.com/api/v2//"
 
-// //
-// //  main.cpp
-// //  도발도발 프로젝트
-// //
-// //  Created by Mercen on 2022/05/25.
-// //
-
-
 #include "sha512.h"    // 비밀번호 해시를 위한 SHA512 라이브러리
-#include "sha512.cpp"  // 출처 : http://www.zedwood.com/article/cpp-sha512-function
+#include "sha512.cpp"  // 출처 : https://www.zedwood.com/article/cpp-sha512-function
 
 #include "json/json.h" // JSON 파싱을 위한 JsonCpp 라이브러리
 #include "jsoncpp.cpp" // 출처 : https://github.com/open-source-parsers/jsoncpp
@@ -373,7 +373,9 @@ void escape() {
 
     table = "{\"reason\":\"" + reason + "\",\"endTime\":\"";
     place = table + etime + "\",\"startTime\":\"" + stime + "\"}";
-    string result = postdata(DODAMAPI + urltype, table + place, false);
+    postdata(DODAMAPI + urltype, place, false); Clear();
+    
+    cout << "\n # " << title[command-1] << "을 신청했습니다!\n" << endl; getch(); return;
 
 }
 
